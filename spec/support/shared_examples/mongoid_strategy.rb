@@ -1,7 +1,5 @@
 shared_examples 'a mongoid strategy' do |value|
   before do
-    # NB: this is required because JSON::LD::API won't deserialize blank node IDs
-    subject.obj.set_subject! 'http://test.uri/'
     subject.obj[RDF::Vocab::DC.title] = value
   end
 
@@ -16,7 +14,7 @@ shared_examples 'a mongoid strategy' do |value|
       subject.persist!
 
       json_ld = JSON.parse(subject.obj.dump(:jsonld))
-      g = RDF::Graph.new << JSON::LD::API.toRdf(json_ld)
+      g = RDF::Graph.new << JSON::LD::API.toRdf(json_ld, rename_bnodes: false)
 
       expect(subject.obj.statements)
           .to contain_exactly *g.statements

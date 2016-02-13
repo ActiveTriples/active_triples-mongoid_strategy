@@ -58,7 +58,7 @@ module ActiveTriples
     def reload
       # Retrieve document from #collection if it exists
       doc = persisted_document.first
-      obj << JSON::LD::API.toRDF(doc.as_document) unless doc.nil?
+      obj << JSON::LD::API.toRDF(doc.as_document, rename_bnodes: false) unless doc.nil?
       @persisted = true
     end
 

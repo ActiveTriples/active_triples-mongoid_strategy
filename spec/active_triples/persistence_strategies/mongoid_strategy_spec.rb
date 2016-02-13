@@ -131,13 +131,9 @@ describe ActiveTriples::MongoidStrategy do
   end
 
   context 'with objects' do
-    # Create a resource with an inverse relation
-    other_resource = ActiveTriples::Resource.new('http://some.thing/')
-    other_resource << RDF::Statement(other_resource.to_term, RDF::Vocab::DC.alternative, RDF::URI('http://test.uri/'))
-
     objects = [
+      ActiveTriples::Resource.new,
       ActiveTriples::Resource.new('http://example.uri/'),
-      other_resource
     ]
 
     it_behaves_like 'a mongoid strategy', objects
