@@ -44,7 +44,8 @@ module ActiveTriples
       # Persist ALL objects as a @graph
       unless obj.empty?
         doc = collection.find_or_initialize_by(id: obj.id)
-        doc.attributes = JSON.parse(obj.dump(:jsonld, standard_prefixes: true))
+        doc.attributes = JSON.parse(obj.dump(:jsonld, standard_prefixes: true,
+                                                      useNativeTypes: true))
         doc.save
       end
 
@@ -58,7 +59,8 @@ module ActiveTriples
     def reload
       # Retrieve document from #collection if it exists
       doc = persisted_document.first
-      obj << JSON::LD::API.toRDF(doc.as_document, rename_bnodes: false) unless doc.nil?
+      obj << JSON::LD::API.toRDF(doc.as_document,
+                                 rename_bnodes: false) unless doc.nil?
       @persisted = true
     end
 
