@@ -4,7 +4,7 @@ shared_examples 'a mongoid strategy' do |value|
   end
 
   describe '#persist!' do
-    it 'writes to #collection' do
+    it "writes graph with #{value.inspect} to #collection" do
       subject.persist!
       expect(subject.collection.all.map(&:id))
           .to contain_exactly *rdf_source.id
@@ -22,7 +22,7 @@ shared_examples 'a mongoid strategy' do |value|
   end
 
   describe '#reload' do
-    it 're-populates from a persisted object' do
+    it 're-populates graph from a persisted document' do
       g = RDF::Graph.new << subject.obj.statements
 
       subject.persist!
