@@ -10,12 +10,12 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/ActiveTriples/active_triples-mongoid_strategy'
   s.email       = 'mj@suhonos.ca'
   s.summary     = %q{Mongoid persistence for ActiveTriples.}
-  s.description = %q{active_triples-mongoid provides a graph-based MongoDB persistence strategy for ActiveTriples.}
-  s.license     = "APACHE2"
+  s.description = %q{active_triples-mongoid_strategy provides a graph-based MongoDB persistence strategy for ActiveTriples.}
+  s.license     = "Apache-2.0"
   s.required_ruby_version     = '>= 2.0.0'
 
   s.add_dependency('active-triples', '~> 0.8')
-  s.add_dependency('mongoid')
+  s.add_dependency('mongoid', '~> 5.0')
 
   s.add_development_dependency('pry')
   s.add_development_dependency('pry-byebug')
