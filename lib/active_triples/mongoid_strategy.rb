@@ -88,8 +88,8 @@ module ActiveTriples
     # Define a Mongoid::Document delegate class
     def delegate_klass(klass_name)
       klass = self.class.const_set(klass_name, Class.new)
-      klass.include Mongoid::Document
-      klass.include Mongoid::Attributes::Dynamic
+      klass.send :include, Mongoid::Document
+      klass.send :include, Mongoid::Attributes::Dynamic
       klass.store_in collection: obj.model_name.plural
       klass
     end

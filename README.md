@@ -1,6 +1,6 @@
 # ActiveTriples::MongoidStrategy
 
-[![Build Status](https://travis-ci.org/ActiveTriples/active_triples-mongoi.png?branch=master)](https://travis-ci.org/ActiveTriples/active_triples-mongoid_strategy)
+[![Build Status](https://travis-ci.org/ActiveTriples/active_triples-mongoid_strategy.svg?branch=master)](https://travis-ci.org/ActiveTriples/active_triples-mongoid_strategy)
 [![Coverage Status](https://coveralls.io/repos/ActiveTriples/active_triples-mongoid_strategy/badge.png?branch=master)](https://coveralls.io/r/ActiveTriples/active_triples-mongoid_strategy?branch=master)
 [![Gem Version](https://badge.fury.io/rb/active_triples-mongoid_strategy.svg)](http://badge.fury.io/rb/active_triples-mongoid_strategy)
 
