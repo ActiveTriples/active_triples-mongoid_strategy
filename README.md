@@ -1,10 +1,10 @@
 # ActiveTriples::MongoidStrategy
 
 [![Build Status](https://travis-ci.org/ActiveTriples/active_triples-mongoid_strategy.svg?branch=master)](https://travis-ci.org/ActiveTriples/active_triples-mongoid_strategy)
-[![Coverage Status](https://coveralls.io/repos/ActiveTriples/active_triples-mongoid_strategy/badge.png?branch=master)](https://coveralls.io/r/ActiveTriples/active_triples-mongoid_strategy?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/ActiveTriples/active_triples-mongoid_strategy/badge.svg?branch=master)](https://coveralls.io/github/ActiveTriples/active_triples-mongoid_strategy?branch=master)
 [![Gem Version](https://badge.fury.io/rb/active_triples-mongoid_strategy.svg)](http://badge.fury.io/rb/active_triples-mongoid_strategy)
 
-Provides a graph-based persistence strategy for the [ActiveTriples](https://github.com/ActiveTriples/ActiveTriples) framework.  `ActiveTriples::RDFSources` are persisted to MongoDB natively as Compacted [JSON-LD](http://json-ld.org) documents.
+Provides a graph-based persistence strategy for the [ActiveTriples](https://github.com/ActiveTriples/ActiveTriples) framework.  RDF Sources are persisted to MongoDB natively as [JSON-LD](https://github.com/ruby-rdf/json-ld) documents.
 
 ## Installation
 
@@ -24,7 +24,7 @@ Or install it yourself as:
 
 Start by [configuring Mongoid](https://docs.mongodb.org/ecosystem/tutorial/mongoid-installation/#configuration) for your environment or application as per the documentation.
 
-Persistence strategies currently (as of [ActiveTriples 0.8.1](https://github.com/ActiveTriples/ActiveTriples/tree/v0.8.1)) use `RDF::Repository` as the default persistence strategy.  To override this, you have to inject `MongoidStrategy` into `RDFSource` instances at runtime:
+ActiveTriples currently (as of [0.8.1](https://github.com/ActiveTriples/ActiveTriples/tree/v0.8.1)) uses an `RDF::Repository` as the default persistence strategy.  To override this, you have to manually set `MongoidStrategy` on instances at runtime:
 
 ```ruby
 require 'active_triples/mongoid_strategy'
@@ -35,6 +35,8 @@ source.persistence_strategy # => #<ActiveTriples::RepositoryStrategy:...>
 source.set_persistence_strategy(ActiveTriples::MongoidStrategy)
 source.persistence_strategy # => #<ActiveTriples::MongoidStrategy:...>
 ```
+
+[See this gist](https://gist.github.com/elrayle/11898117572445a15c4a) for more information on Persistence Strategies.
 
 ## Contributing
 
