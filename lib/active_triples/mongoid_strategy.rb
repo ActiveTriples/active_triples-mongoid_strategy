@@ -27,7 +27,7 @@ module ActiveTriples
     ##
     # Delete the Document from the collection
     def erase_old_resource
-      persisted_document.destroy
+      document.destroy if document
     end
 
     ##
@@ -45,13 +45,11 @@ module ActiveTriples
     def persist!
       # Persist resource as a @graph
       unless source.empty?
-        doc = collection.find_or_initialize_by(id: source.id)
-
         # Use a flattened form to avoid assigning weird attributes (eg. 'dc:title')
         json = JSON.parse(source.dump(:jsonld, standard_prefixes: true, useNativeTypes: true))
-        doc.attributes = JSON::LD::API.flatten(json, json['@context'], rename_bnodes: false)
+        document.attributes = JSON::LD::API.flatten(json, json['@context'], rename_bnodes: false)
 
-        doc.save
+        document.save
       end
 
       @persisted = true
@@ -63,8 +61,7 @@ module ActiveTriples
     # @return [Boolean]
     def reload
       # Retrieve document from #collection if it exists
-      doc = persisted_document.first
-      source << JSON::LD::API.toRDF(doc.as_document, rename_bnodes: false) unless doc.nil?
+      source << JSON::LD::API.toRDF(document.as_document, rename_bnodes: false) if document
       @persisted = true
     end
 
@@ -72,8 +69,8 @@ module ActiveTriples
 
     ##
     # @return [Mongoid::Criteria] criteria matching the document
-    def persisted_document
-      collection.where(id: source.id)
+    def document
+      @doc ||= collection.find_or_initialize_by(id: source.id)
     end
 
     ##
