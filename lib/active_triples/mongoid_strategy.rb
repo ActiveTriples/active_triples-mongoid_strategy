@@ -25,30 +25,28 @@ module ActiveTriples
     end
 
     ##
-    # Delete the Document from the collection
+    # Delete the document from the collection
     def erase_old_resource
       document.destroy if document
     end
 
     ##
-    # Delete the Document from the collection
-    # and mark the Resource as destroyed
+    # Delete the document from the collection
+    # and mark the resource as destroyed
     def destroy
       super { source.clear }
       erase_old_resource
     end
 
     ##
-    # Persists the resource to the repository
+    # Persists the resource to the repository as a document
     #
     # @return [true] returns true if the save did not error
     def persist!
-      # Persist resource as a @graph
       unless source.empty?
         # Use a flattened form to avoid assigning weird attributes (eg. 'dc:title')
         json = JSON.parse(source.dump(:jsonld, standard_prefixes: true, useNativeTypes: true))
         document.attributes = JSON::LD::API.flatten(json, json['@context'], rename_bnodes: false)
-
         document.save
       end
 
@@ -56,22 +54,23 @@ module ActiveTriples
     end
 
     ##
-    # Repopulates the graph from the repository.
+    # Repopulates the source graph from the repository
     #
     # @return [Boolean]
     def reload
-      # Retrieve document from #collection if it exists
+      # Retrieve document from collection if it exists
       source << JSON::LD::API.toRDF(document.as_document, rename_bnodes: false) if document
       @persisted = true
     end
 
-    private
-
     ##
-    # @return [Mongoid::Criteria] criteria matching the document
+    # @return [Mongoid::Document] 
     def document
       @doc ||= collection.find_or_initialize_by(id: source.id)
     end
+    delegate :history_tracks, to: :document
+
+    private
 
     ##
     # Return the delegated class for the resource's model
