@@ -1,4 +1,5 @@
 require 'active_triples/persistence_strategies/persistence_strategy'
+require 'active_triples/mongoid_strategy/history_tracker'
 require 'active_triples/mongoid_strategy/version'
 require 'mongoid'
 require 'json/ld'
@@ -91,7 +92,9 @@ module ActiveTriples
       klass = self.class.const_set(klass_name, Class.new)
       klass.send :include, Mongoid::Document
       klass.send :include, Mongoid::Attributes::Dynamic
+      klass.send :include, Mongoid::History::Trackable
       klass.store_in collection: source.model_name.plural
+      klass.track_history
       klass
     end
   end
