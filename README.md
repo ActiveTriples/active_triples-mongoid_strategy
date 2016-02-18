@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/ActiveTriples/active_triples-mongoid_strategy/badge.svg?branch=master)](https://coveralls.io/github/ActiveTriples/active_triples-mongoid_strategy?branch=master)
 [![Gem Version](https://badge.fury.io/rb/active_triples-mongoid_strategy.svg)](http://badge.fury.io/rb/active_triples-mongoid_strategy)
 
-Provides a graph-based persistence strategy for the [ActiveTriples](https://github.com/ActiveTriples/ActiveTriples) framework.  RDF Sources are persisted to MongoDB natively as [JSON-LD](https://github.com/ruby-rdf/json-ld) documents.
+Provides a graph-based persistence strategy for the [ActiveTriples](https://github.com/ActiveTriples/ActiveTriples) framework.  RDF Sources are persisted to MongoDB natively as Flattened [JSON-LD](https://github.com/ruby-rdf/json-ld) documents.
 
 ## Installation
 

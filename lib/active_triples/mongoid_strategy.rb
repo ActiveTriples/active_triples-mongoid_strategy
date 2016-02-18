@@ -46,8 +46,11 @@ module ActiveTriples
       # Persist resource as a @graph
       unless source.empty?
         doc = collection.find_or_initialize_by(id: source.id)
-        doc.attributes = JSON.parse(source.dump(:jsonld, standard_prefixes: true,
-                                                      useNativeTypes: true))
+
+        # Use a flattened form to avoid assigning weird attributes (eg. 'dc:title')
+        json = JSON.parse(source.dump(:jsonld, standard_prefixes: true, useNativeTypes: true))
+        doc.attributes = JSON::LD::API.flatten(json, json['@context'], rename_bnodes: false)
+
         doc.save
       end
 
@@ -61,8 +64,7 @@ module ActiveTriples
     def reload
       # Retrieve document from #collection if it exists
       doc = persisted_document.first
-      source << JSON::LD::API.toRDF(doc.as_document,
-                                 rename_bnodes: false) unless doc.nil?
+      source << JSON::LD::API.toRDF(doc.as_document, rename_bnodes: false) unless doc.nil?
       @persisted = true
     end
 
