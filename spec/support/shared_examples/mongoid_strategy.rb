@@ -1,6 +1,6 @@
 shared_examples 'a mongoid strategy' do |value|
   before do
-    subject.obj[RDF::Vocab::DC.title] = value
+    subject.source[RDF::Vocab::DC.title] = value
   end
 
   describe '#persist!' do
@@ -13,23 +13,23 @@ shared_examples 'a mongoid strategy' do |value|
     it 'serializes as JSON-LD' do
       subject.persist!
 
-      json_ld = JSON.parse(subject.obj.dump(:jsonld))
+      json_ld = JSON.parse(subject.source.dump(:jsonld))
       g = RDF::Graph.new << JSON::LD::API.toRdf(json_ld, rename_bnodes: false)
 
-      expect(subject.obj.statements)
+      expect(subject.source.statements)
           .to contain_exactly *g.statements
     end
   end
 
   describe '#reload' do
     it 're-populates graph from a persisted document' do
-      g = RDF::Graph.new << subject.obj.statements
+      g = RDF::Graph.new << subject.source.statements
 
       subject.persist!
-      subject.obj.clear
+      subject.source.clear
       subject.reload
 
-      expect(subject.obj.statements)
+      expect(subject.source.statements)
           .to contain_exactly *g.statements
     end
   end

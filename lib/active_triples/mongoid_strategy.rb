@@ -9,17 +9,17 @@ module ActiveTriples
   class MongoidStrategy
     include PersistenceStrategy
 
-    # @!attribute [r] obj
+    # @!attribute [r] source
     #   the RDFSource to persist with this strategy
     # @!attribute [r] collection
-    #   the Mongoid::Document class that the object
+    #   the Mongoid::Document class that the resource
     #   will project itself on when persisting
-    attr_reader :obj, :collection
+    attr_reader :source, :collection
 
     ##
-    # @param obj [RDFSource] the `RDFSource` to persist with the strategy.
-    def initialize(obj)
-      @obj = obj
+    # @param source [RDFSource] the `RDFSource` to persist with the strategy.
+    def initialize(source)
+      @source = source
       @collection = set_klass
     end
 
@@ -33,18 +33,19 @@ module ActiveTriples
     # Delete the Document from the collection
     # and mark the Resource as destroyed
     def destroy
-      super { erase_old_resource }
+      super { source.clear }
+      erase_old_resource
     end
 
     ##
-    # Persists the object to the repository
+    # Persists the resource to the repository
     #
     # @return [true] returns true if the save did not error
     def persist!
-      # Persist ALL objects as a @graph
-      unless obj.empty?
-        doc = collection.find_or_initialize_by(id: obj.id)
-        doc.attributes = JSON.parse(obj.dump(:jsonld, standard_prefixes: true,
+      # Persist resource as a @graph
+      unless source.empty?
+        doc = collection.find_or_initialize_by(id: source.id)
+        doc.attributes = JSON.parse(source.dump(:jsonld, standard_prefixes: true,
                                                       useNativeTypes: true))
         doc.save
       end
@@ -59,7 +60,7 @@ module ActiveTriples
     def reload
       # Retrieve document from #collection if it exists
       doc = persisted_document.first
-      obj << JSON::LD::API.toRDF(doc.as_document,
+      source << JSON::LD::API.toRDF(doc.as_document,
                                  rename_bnodes: false) unless doc.nil?
       @persisted = true
     end
@@ -69,13 +70,13 @@ module ActiveTriples
     ##
     # @return [Mongoid::Criteria] criteria matching the document
     def persisted_document
-      collection.where(id: obj.id)
+      collection.where(id: source.id)
     end
 
     ##
-    # Return the delegated class for the object's model
+    # Return the delegated class for the resource's model
     def set_klass
-      klass_name = obj.model_name.name.demodulize.to_sym
+      klass_name = source.model_name.name.demodulize.to_sym
 
       if self.class.constants.include? klass_name
         return self.class.const_get(klass_name)
@@ -90,7 +91,7 @@ module ActiveTriples
       klass = self.class.const_set(klass_name, Class.new)
       klass.send :include, Mongoid::Document
       klass.send :include, Mongoid::Attributes::Dynamic
-      klass.store_in collection: obj.model_name.plural
+      klass.store_in collection: source.model_name.plural
       klass
     end
   end
