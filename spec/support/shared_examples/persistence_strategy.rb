@@ -19,4 +19,38 @@ shared_examples 'a persistence strategy' do
       end
     end
   end
+
+  describe '#persisted?' do
+    context 'before persist!' do
+      it 'returns false' do
+        expect(subject).not_to be_persisted
+      end
+    end
+
+    context 'after persist!' do
+      it 'returns true' do
+        subject.persist!
+        expect(subject).to be_persisted
+      end
+    end
+  end
+
+  describe '#destroy' do
+    it 'marks resource as destroyed' do
+      subject.destroy
+      expect(subject).to be_destroyed
+    end
+  end
+
+  describe '#destroyed?' do
+    it 'is false' do
+      expect(subject).not_to be_destroyed
+    end
+  end
+
+  describe '#reload' do
+    it 'returns true when both persistence and object are empty' do
+      expect(subject.reload).to be true
+    end
+  end
 end
