@@ -20,6 +20,7 @@ module ActiveTriples
     ##
     # @param source [RDFSource] the `RDFSource` to persist with the strategy.
     # @param [Hash] opts options to pass to the strategy
+    # @option opts [Boolean] :trackable enable history tracking
     def initialize(source, opts = {})
       @source = source
       @collection = set_klass
@@ -46,12 +47,10 @@ module ActiveTriples
     #
     # @return [true] returns true if the save did not error
     def persist!
-      unless source.empty?
-        # Use a flattened form to avoid assigning weird attributes (eg. 'dc:title')
-        json = JSON.parse(source.dump(:jsonld, standard_prefixes: true, useNativeTypes: true))
-        document.attributes = JSON::LD::API.flatten(json, json['@context'], rename_bnodes: false)
-        document.save
-      end
+      # Use a flattened form to avoid assigning weird attributes (eg. 'dc:title')
+      json = JSON.parse(source.dump(:jsonld, standard_prefixes: true, useNativeTypes: true))
+      document.attributes = JSON::LD::API.flatten(json, json['@context'], rename_bnodes: false)
+      document.save
 
       @persisted = true
     end

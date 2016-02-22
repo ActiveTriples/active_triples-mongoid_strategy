@@ -8,11 +8,13 @@ module ActiveTriples
     ##
     # Make the delegate class trackable
     def enable_tracking
-      @collection.send :include, Mongoid::History::Trackable
-      @collection.track_history
+      collection.send :include, Mongoid::History::Trackable
+      collection.track_history
 
-      # Allow accessing #history_tracks directly
-      self.class.send(:delegate, :history_tracks, to: :document)
+      class << self
+        delegate :history_tracks, to: :document
+        delegate :track_history?, to: :collection
+      end
     end
 
     ##
