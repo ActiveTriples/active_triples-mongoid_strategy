@@ -1,6 +1,6 @@
-require 'active_triples/persistence_strategies/persistence_strategy'
-require 'active_triples/mongoid_strategy/history_tracker'
+require 'active_triples/mongoid_strategy/trackable'
 require 'active_triples/mongoid_strategy/version'
+require 'active_triples'
 require 'mongoid'
 require 'json/ld'
 
@@ -19,15 +19,18 @@ module ActiveTriples
 
     ##
     # @param source [RDFSource] the `RDFSource` to persist with the strategy.
-    def initialize(source)
+    # @param [Hash] opts options to pass to the strategy
+    def initialize(source, opts = {})
       @source = source
       @collection = set_klass
+
+      enable_tracking if opts[:trackable]
     end
 
     ##
     # Delete the document from the collection
     def erase_old_resource
-      document.destroy if document
+      document.destroy
     end
 
     ##
@@ -58,17 +61,17 @@ module ActiveTriples
     #
     # @return [Boolean]
     def reload
-      # Retrieve document from collection if it exists
-      source << JSON::LD::API.toRDF(document.as_document, rename_bnodes: false) if document
+      # TODO: are source.clear and/or document.reload required here?
+      source << JSON::LD::API.toRDF(document.as_document, rename_bnodes: false)
       @persisted = true
     end
 
     ##
-    # @return [Mongoid::Document] 
+    # @return [Mongoid::Document]
     def document
+      # Retrieve document from collection if it exists
       @doc ||= collection.find_or_initialize_by(id: source.id)
     end
-    delegate :history_tracks, to: :document
 
     private
 
@@ -90,9 +93,7 @@ module ActiveTriples
       klass = self.class.const_set(klass_name, Class.new)
       klass.send :include, Mongoid::Document
       klass.send :include, Mongoid::Attributes::Dynamic
-      klass.send :include, Mongoid::History::Trackable
       klass.store_in collection: source.model_name.plural
-      klass.track_history
       klass
     end
   end
