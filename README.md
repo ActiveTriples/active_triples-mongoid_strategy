@@ -38,6 +38,10 @@ source.persistence_strategy # => #<ActiveTriples::MongoidStrategy:...>
 
 [See this gist](https://gist.github.com/elrayle/11898117572445a15c4a) for more information on Persistence Strategies.
 
+### History Tracking
+
+`MongoidStrategy` optionally allows tracking history (aka 'versioning') to store changes in a graph's state over time.  In order to use history tracking, use the `ActiveTriples::MongoidStrategy::Trackable` persistence strategy.
+
 ## Contributing
 
 Please observe the following guidelines:
