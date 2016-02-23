@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency('active-triples', '~> 0.8')
   s.add_dependency('mongoid', '~> 5.0')
+  s.add_dependency('mongoid-history', '~> 0.5')
 
   s.add_development_dependency('pry')
   s.add_development_dependency('rdoc')

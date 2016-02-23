@@ -1,5 +1,6 @@
-require 'active_triples/persistence_strategies/persistence_strategy'
+require 'active_triples/mongoid_strategy/trackable'
 require 'active_triples/mongoid_strategy/version'
+require 'active_triples'
 require 'mongoid'
 require 'json/ld'
 
@@ -24,54 +25,51 @@ module ActiveTriples
     end
 
     ##
-    # Delete the Document from the collection
+    # Delete the document from the collection
     def erase_old_resource
-      persisted_document.destroy
+      document.destroy
     end
 
     ##
-    # Delete the Document from the collection
-    # and mark the Resource as destroyed
+    # Delete the document from the collection
+    # and mark the resource as destroyed
     def destroy
       super { source.clear }
       erase_old_resource
     end
 
     ##
-    # Persists the resource to the repository
+    # Persists the resource to the repository as a document
     #
     # @return [true] returns true if the save did not error
     def persist!
-      # Persist resource as a @graph
-      unless source.empty?
-        doc = collection.find_or_initialize_by(id: source.id)
-        doc.attributes = JSON.parse(source.dump(:jsonld, standard_prefixes: true,
-                                                      useNativeTypes: true))
-        doc.save
-      end
+      # Use a flattened form to avoid assigning weird attributes (eg. 'dc:title')
+      json = JSON.parse(source.dump(:jsonld, standard_prefixes: true, useNativeTypes: true))
+      document.attributes = JSON::LD::API.flatten(json, json['@context'], rename_bnodes: false)
+      document.save
 
       @persisted = true
     end
 
     ##
-    # Repopulates the graph from the repository.
+    # Repopulates the source graph from the repository
     #
-    # @return [Boolean]
+    # @return [true]
     def reload
-      # Retrieve document from #collection if it exists
-      doc = persisted_document.first
-      source << JSON::LD::API.toRDF(doc.as_document,
-                                 rename_bnodes: false) unless doc.nil?
+      # NB: we don't explicitly reload the document, ie.
+      # document.reload if document.persisted?
+      source << JSON::LD::API.toRDF(document.as_document, rename_bnodes: false)
       @persisted = true
+    end
+
+    ##
+    # @return [Mongoid::Document]
+    def document
+      # Retrieve document from collection if it exists
+      @doc ||= collection.find_or_initialize_by(id: source.id)
     end
 
     private
-
-    ##
-    # @return [Mongoid::Criteria] criteria matching the document
-    def persisted_document
-      collection.where(id: source.id)
-    end
 
     ##
     # Return the delegated class for the resource's model
