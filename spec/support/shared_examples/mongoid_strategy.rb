@@ -13,8 +13,8 @@ shared_examples 'a mongoid strategy' do |value|
     it 'serializes as JSON-LD' do
       subject.persist!
 
-      json_ld = JSON.parse(subject.source.dump(:jsonld))
-      g = RDF::Graph.new << JSON::LD::API.toRdf(json_ld, rename_bnodes: false)
+      # subject.document will contain JSON-LD
+      g = RDF::Graph.new << JSON::LD::API.toRdf(subject.document.as_document, rename_bnodes: false)
 
       expect(subject.source.statements)
           .to contain_exactly *g.statements
@@ -22,6 +22,8 @@ shared_examples 'a mongoid strategy' do |value|
   end
 
   describe '#reload' do
+    # TODO: refactor / clean up
+
     it 're-populates graph from a persisted document' do
       g = RDF::Graph.new << subject.source.statements
 
@@ -31,6 +33,19 @@ shared_examples 'a mongoid strategy' do |value|
 
       expect(subject.source.statements)
           .to contain_exactly *g.statements
+    end
+
+    it 'merges persisted graph with updated statements' do
+      g = RDF::Graph.new << subject.source.statements
+      statement = RDF::Statement(rdf_source.to_term, RDF::Vocab::DC.alternative, 'moomin')
+
+      subject.persist!
+      subject.source.clear
+      subject.source << statement
+      subject.reload
+
+      expect(subject.source.statements)
+          .to contain_exactly *g.statements, statement
     end
   end
 end
