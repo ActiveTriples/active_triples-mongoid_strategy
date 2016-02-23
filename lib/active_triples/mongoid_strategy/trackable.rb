@@ -3,6 +3,17 @@ require 'mongoid/history'
 module ActiveTriples
   class MongoidStrategy
 
+    ##
+    # Roll back last change and update source graph
+    # @return [Boolean] return whether the rollback was successful
+    def undo!
+      return false if history_tracks.empty?
+
+      document.undo!
+      source.clear
+      reload
+    end
+
     private
 
     ##

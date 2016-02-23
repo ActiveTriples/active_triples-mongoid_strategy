@@ -58,9 +58,10 @@ module ActiveTriples
     ##
     # Repopulates the source graph from the repository
     #
-    # @return [Boolean]
+    # @return [true]
     def reload
-      # TODO: are source.clear and/or document.reload required here?
+      # NB: we don't explicitly reload the document, ie.
+      # document.reload if document.persisted?
       source << JSON::LD::API.toRDF(document.as_document, rename_bnodes: false)
       @persisted = true
     end
