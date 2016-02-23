@@ -19,13 +19,9 @@ module ActiveTriples
 
     ##
     # @param source [RDFSource] the `RDFSource` to persist with the strategy.
-    # @param [Hash] opts options to pass to the strategy
-    # @option opts [Boolean] :trackable enable history tracking
-    def initialize(source, opts = {})
+    def initialize(source)
       @source = source
       @collection = set_klass
-
-      enable_tracking if opts[:trackable]
     end
 
     ##
