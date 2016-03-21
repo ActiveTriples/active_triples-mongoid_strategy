@@ -38,14 +38,21 @@ module ActiveTriples
       erase_old_resource
     end
 
+    delegate :destroyed?, to: :document
+
     ##
     # Persists the resource to the repository as a document
     #
     # @return [true] returns true if the save did not error
     def persist!
-      # Use a flattened form to avoid assigning weird attributes (eg. 'dc:title')
-      json = JSON.parse(source.dump(:jsonld, standard_prefixes: true, useNativeTypes: true))
-      document.attributes = JSON::LD::API.flatten(json, json['@context'], rename_bnodes: false)
+      return true if document.destroyed?
+
+      unless source.empty?
+        # Use a flattened form to avoid assigning weird attributes (eg. 'dc:title')
+        json = JSON.parse(source.dump(:jsonld, standard_prefixes: true, useNativeTypes: true))
+        document.attributes = JSON::LD::API.flatten(json, json['@context'], rename_bnodes: false)
+      end
+
       document.save
 
       @persisted = true

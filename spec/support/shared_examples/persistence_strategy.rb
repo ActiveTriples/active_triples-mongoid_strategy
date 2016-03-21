@@ -40,6 +40,11 @@ shared_examples 'a persistence strategy' do
       subject.destroy
       expect(subject).to be_destroyed
     end
+
+    it 'marks resource as persisted' do
+      subject.destroy
+      expect(subject).to be_persisted
+    end
   end
 
   describe '#destroyed?' do
