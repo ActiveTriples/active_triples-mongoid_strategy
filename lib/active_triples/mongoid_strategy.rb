@@ -45,10 +45,9 @@ module ActiveTriples
     #
     # @return [true] returns true if the save did not error
     def persist!
-      return true if source.empty?
+      return true if document.destroyed?
 
-      # TODO: use case for persisting an already-destroyed resource
-      unless document.destroyed?
+      unless source.empty?
         # Use a flattened form to avoid assigning weird attributes (eg. 'dc:title')
         json = JSON.parse(source.dump(:jsonld, standard_prefixes: true, useNativeTypes: true))
         document.attributes = JSON::LD::API.flatten(json, json['@context'], rename_bnodes: false)
