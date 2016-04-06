@@ -45,8 +45,10 @@ module ActiveTriples
     #
     # @return [true] returns true if the save did not error
     def persist!
+      # NB: this hits the database a couple of times!
       return true if document.destroyed?
       update_document unless source.empty?
+      # update_document unless document.destroyed?
       @persisted = true
     end
 
@@ -76,7 +78,11 @@ module ActiveTriples
       json = JSON.parse(source.dump(:jsonld, standard_prefixes: true, useNativeTypes: true))
 
       # NB: This will assign attributes AND save the document
+      # NB: when document is destroyed, attributes are frozen
       document.update_attributes JSON::LD::API.flatten(json, json['@context'], rename_bnodes: false)
+
+      # TODO: consider alternative serialization
+      # document.update_attributes source.attributes unless document.destroyed?
     end
 
     ##
